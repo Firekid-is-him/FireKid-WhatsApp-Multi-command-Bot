@@ -199,6 +199,20 @@ async function startBot() {
         const from = msg.key.remoteJid;
         const isGroup = from.endsWith('@g.us');
         const sender = msg.key.participant || from;
+        
+        if (commands.online && typeof commands.online.isAutoReadEnabled === 'function') {
+          const autoReadEnabled = commands.online.isAutoReadEnabled();
+          
+          if (autoReadEnabled && !msg.key.fromMe) {
+            try {
+              await sock.readMessages([msg.key]);
+              console.log(`📖 Auto-read message from ${sender}`);
+            } catch (error) {
+              console.error('Auto-read error:', error.message);
+            }
+          }
+        }
+
         const messageText = msg.message.conversation || 
                            msg.message.extendedTextMessage?.text || '';
 
