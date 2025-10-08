@@ -1,0 +1,30 @@
+# Environment variables
+.env
+
+# Node modules
+node_modules/
+
+# Auth data (session files)
+auth_data/
+
+# Temporary files
+temp_repo/
+temp_commands/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build files
+dist/
+build/
