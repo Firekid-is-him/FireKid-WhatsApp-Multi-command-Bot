@@ -5,11 +5,14 @@ const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const cron = require('node-cron');
+const P = require('pino');
 require('dotenv').config();
 
 const { loadSessionFromGitHub } = require('./utils/sessionLoader');
 const { loadCommands } = require('./utils/commandLoader');
 const { setupAdminAPI } = require('./utils/adminAPI');
+
+const logger = P({ level: 'silent' });
 
 const config = {
   sessionId: process.env.SESSION_ID || '',
@@ -121,6 +124,7 @@ async function startBot() {
 
     const sock = makeWASocket({
       auth: state,
+      logger: logger,
       printQRInTerminal: false,
       browser: Browsers.ubuntu('Chrome'),
       markOnlineOnConnect: true,
