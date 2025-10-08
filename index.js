@@ -1,5 +1,5 @@
 const makeWASocket = require('@whiskeysockets/baileys').default;
-const { useMultiFileAuthState, DisconnectReason, Browsers, delay } = require('@whiskeysockets/baileys');
+const { useMultiFileAuthState, DisconnectReason, Browsers } = require('@whiskeysockets/baileys');
 const { Boom } = require('@hapi/boom');
 const fs = require('fs');
 const path = require('path');
@@ -33,7 +33,6 @@ let botState = {
 };
 
 let commands = {};
-
 const LOCK_FILE = path.join(__dirname, '.bot.lock');
 let isConnecting = false;
 let reconnectTimeout = null;
@@ -51,3 +50,250 @@ function checkInstanceLock() {
       }
       
       console.log('❌ Another instance is running (PID:', lockData.pid, ')');
+      return false;
+    } catch (error) {
+      fs.unlinkSync(LOCK_FILE);
+      return true;
+    }
+  }
+  return true;
+}
+
+function createInstanceLock() {
+  const lockData = {
+    pid: process.pid,
+    timestamp: Date.now(),
+    startedAt: new Date().toISOString()
+  };
+  fs.writeFileSync(LOCK_FILE, JSON.stringify(lockData, null, 2));
+  console.log(`🔒 Instance lock created (PID: ${process.pid})`);
+}
+
+function removeInstanceLock() {
+  if (fs.existsSync(LOCK_FILE)) {
+    fs.unlinkSync(LOCK_FILE);
+    console.log('🔓 Instance lock removed');
+  }
+}
+
+async function startBot() {
+  try {
+    if (isConnecting) {
+      console.log('⏳ Connection already in progress...');
+      return;
+    }
+
+    if (!checkInstanceLock()) {
+      console.log('🛑 Exiting to prevent multiple instances');
+      process.exit(1);
+    }
+
+    isConnecting = true;
+    createInstanceLock();
+
+    console.log('🔥 Firekid WhatsApp Bot Starting...');
+    console.log(`📋 Session ID: ${config.sessionId}`);
+    console.log(`⚙️ Prefix: ${config.prefix}`);
+
+    if (!config.sessionId) {
+      console.error('❌ SESSION_ID not provided in environment variables!');
+      process.exit(1);
+    }
+
+    if (!config.githubToken) {
+      console.error('❌ GITHUB_TOKEN not provided in environment variables!');
+      process.exit(1);
+    }
+
+    console.log('📥 Loading session from GitHub...');
+    const authDir = await loadSessionFromGitHub(config.sessionId, config.githubToken, config.githubRepo);
+    
+    if (!authDir) {
+      console.error('❌ Failed to load session from GitHub!');
+      process.exit(1);
+    }
+
+    console.log('📦 Loading commands from GitHub...');
+    commands = await loadCommands(config.githubToken, config.githubRepo);
+    console.log(`✅ Loaded ${Object.keys(commands).length} commands`);
+
+    const { state, saveCreds } = await useMultiFileAuthState(authDir);
+
+    const sock = makeWASocket({
+      auth: state,
+      printQRInTerminal: false,
+      browser: Browsers.ubuntu('Chrome'),
+      markOnlineOnConnect: true,
+      syncFullHistory: false,
+      connectTimeoutMs: 60000,
+      defaultQueryTimeoutMs: 0,
+      keepAliveIntervalMs: 10000,
+      getMessage: async (key) => {
+        return { conversation: '' };
+      },
+    });
+
+    sock.ev.on('creds.update', saveCreds);
+
+    sock.ev.on('connection.update', async (update) => {
+      const { connection, lastDisconnect } = update;
+
+      if (connection === 'close') {
+        isConnecting = false;
+        
+        const statusCode = lastDisconnect?.error instanceof Boom 
+          ? lastDisconnect.error.output.statusCode 
+          : 500;
+
+        console.log('❌ Connection closed. Status:', statusCode);
+
+        if (statusCode === DisconnectReason.connectionReplaced) {
+          console.log('⚠️ Connection replaced - Another session opened');
+          console.log('🛑 NOT reconnecting to prevent conflict');
+          removeInstanceLock();
+          process.exit(1);
+          return;
+        }
+
+        if (statusCode === DisconnectReason.loggedOut) {
+          console.log('🔐 Logged out - Delete auth folder and scan QR again');
+          removeInstanceLock();
+          process.exit(0);
+          return;
+        }
+
+        const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+
+        if (shouldReconnect) {
+          if (reconnectTimeout) {
+            clearTimeout(reconnectTimeout);
+          }
+          console.log('🔄 Reconnecting in 5 seconds...');
+          reconnectTimeout = setTimeout(() => startBot(), 5000);
+        } else {
+          removeInstanceLock();
+        }
+      } else if (connection === 'open') {
+        isConnecting = false;
+        console.log('✅ WhatsApp Bot Connected Successfully!');
+        console.log(`🤖 Bot is running with prefix: ${config.prefix}`);
+      }
+    });
+
+    sock.ev.on('messages.upsert', async ({ messages, type }) => {
+      if (type !== 'notify') return;
+
+      for (const msg of messages) {
+        if (!msg.message) continue;
+
+        const from = msg.key.remoteJid;
+        const isGroup = from.endsWith('@g.us');
+        const sender = msg.key.participant || from;
+        const messageText = msg.message.conversation || 
+                           msg.message.extendedTextMessage?.text || '';
+
+        if (!botState.isActive && sender !== 'admin') {
+          continue;
+        }
+
+        if (!botState.users.has(sender)) {
+          botState.users.set(sender, {
+            id: sender,
+            firstSeen: new Date(),
+            lastSeen: new Date(),
+            messageCount: 0,
+          });
+        }
+        const user = botState.users.get(sender);
+        user.lastSeen = new Date();
+        user.messageCount++;
+
+        if (!messageText.startsWith(config.prefix)) continue;
+
+        const args = messageText.slice(config.prefix.length).trim().split(/ +/);
+        const commandName = args.shift().toLowerCase();
+
+        const command = commands[commandName];
+        if (command && command.handler) {
+          try {
+            console.log(`🎯 Executing command: ${commandName} from ${sender}`);
+            botState.stats.totalCommands++;
+            botState.stats.commandsToday++;
+
+            await command.handler(sock, msg, args, {
+              from,
+              sender,
+              isGroup,
+              prefix: config.prefix,
+            });
+          } catch (error) {
+            console.error(`❌ Error executing command ${commandName}:`, error.message);
+            await sock.sendMessage(from, {
+              text: `⚠️ Error executing command: ${error.message}`,
+            });
+          }
+        }
+      }
+    });
+
+    botState.sock = sock;
+    return sock;
+
+  } catch (error) {
+    isConnecting = false;
+    console.error('❌ Bot startup error:', error.message);
+    removeInstanceLock();
+    process.exit(1);
+  }
+}
+
+if (config.renderExternalUrl) {
+  console.log('🔄 Setting up auto-ping for Render...');
+  cron.schedule('*/10 * * * *', async () => {
+    try {
+      await axios.get(`${config.renderExternalUrl}/health`);
+      console.log('✅ Auto-ping successful');
+    } catch (error) {
+      console.error('❌ Auto-ping failed:', error.message);
+    }
+  });
+}
+
+setupAdminAPI(config.port, config.adminApiKey, botState, (newState) => {
+  botState.isActive = newState;
+});
+
+cron.schedule('0 0 * * *', () => {
+  botState.stats.commandsToday = 0;
+  console.log('📊 Daily stats reset');
+});
+
+process.on('SIGINT', () => {
+  console.log('\n👋 Bot shutting down gracefully...');
+  if (reconnectTimeout) {
+    clearTimeout(reconnectTimeout);
+  }
+  if (botState.sock) {
+    botState.sock.end();
+  }
+  removeInstanceLock();
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('\n👋 Bot shutting down (SIGTERM)...');
+  if (reconnectTimeout) {
+    clearTimeout(reconnectTimeout);
+  }
+  if (botState.sock) {
+    botState.sock.end();
+  }
+  removeInstanceLock();
+  process.exit(0);
+});
+
+process.on('exit', () => {
+  removeInstanceLock();
+});
+
+startBot().catch(console.error);
