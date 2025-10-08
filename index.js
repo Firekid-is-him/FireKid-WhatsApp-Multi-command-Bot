@@ -22,6 +22,7 @@ const config = {
   githubToken: process.env.GITHUB_TOKEN || '',
   githubRepo: 'https://github.com/idc-what-u-think/Firekid-MD-.git',
   adminApiKey: process.env.ADMIN_API_KEY || 'FIREKID_ADMIN_SECRET_KEY_2024',
+  ownerNumber: process.env.OWNER_NUMBER || '',
 };
 
 let botState = {
@@ -97,6 +98,7 @@ async function startBot() {
     console.log('🔥 Firekid WhatsApp Bot Starting...');
     console.log(`📋 Session ID: ${config.sessionId}`);
     console.log(`⚙️ Prefix: ${config.prefix}`);
+    console.log(`👤 Owner: ${config.ownerNumber || 'Not configured'}`);
 
     if (!config.sessionId) {
       console.error('❌ SESSION_ID not provided in environment variables!');
@@ -106,6 +108,10 @@ async function startBot() {
     if (!config.githubToken) {
       console.error('❌ GITHUB_TOKEN not provided in environment variables!');
       process.exit(1);
+    }
+
+    if (!config.ownerNumber) {
+      console.warn('⚠️ OWNER_NUMBER not configured. Owner-only commands will be disabled.');
     }
 
     console.log('📥 Loading session from GitHub...');
@@ -216,6 +222,17 @@ async function startBot() {
 
         const args = messageText.slice(config.prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
+
+        const ownerNumber = config.ownerNumber.includes('@') 
+          ? config.ownerNumber 
+          : `${config.ownerNumber}@s.whatsapp.net`;
+
+        if (isGroup && commands.private && typeof commands.private.isPrivateModeEnabled === 'function') {
+          const isPrivateMode = commands.private.isPrivateModeEnabled();
+          if (isPrivateMode && sender !== ownerNumber) {
+            continue;
+          }
+        }
 
         const command = commands[commandName];
         if (command && command.handler) {
