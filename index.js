@@ -205,7 +205,9 @@ async function startBot() {
 
         const from = msg.key.remoteJid;
         const isGroup = from.endsWith('@g.us');
-        const sender = msg.key.participant || msg.key.remoteJid;
+        const sender = isGroup 
+          ? (msg.key.participant || msg.key.remoteJid)
+          : (msg.key.fromMe ? sock.user.id : msg.key.remoteJid);
         
         if (commands.online && typeof commands.online.isAutoReadEnabled === 'function') {
           const autoReadEnabled = commands.online.isAutoReadEnabled();
