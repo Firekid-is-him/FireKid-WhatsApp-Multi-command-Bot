@@ -205,11 +205,15 @@ async function startBot() {
 
         const from = msg.key.remoteJid;
         const isGroup = from.endsWith('@g.us');
-        let sender = isGroup 
-          ? (msg.key.participant || msg.key.remoteJid)
-          : (msg.key.fromMe ? sock.user.id : msg.key.remoteJid);
+        let sender;
         
-        if (msg.key.fromMe && sender.includes(':')) {
+        if (isGroup) {
+          sender = msg.key.participant || msg.key.remoteJid;
+        } else {
+          sender = msg.key.fromMe ? sock.user.id : msg.key.remoteJid;
+        }
+        
+        if (sender && sender.includes(':')) {
           sender = sender.split(':')[0] + '@s.whatsapp.net';
         }
         
