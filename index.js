@@ -21,7 +21,7 @@ const config = {
   renderExternalUrl: process.env.RENDER_EXTERNAL_URL || '',
   githubToken: process.env.GITHUB_TOKEN || '',
   githubRepo: 'https://github.com/idc-what-u-think/Firekid-MD-.git',
-  adminApiKey: process.env.ADMIN_API_KEY || 'FIREKID_ADMIN_SECRET_KEY_2024',
+  adminApiKey: process.env.ADMIN_API_KEY,
   ownerNumber: process.env.OWNER_NUMBER || '',
 };
 
