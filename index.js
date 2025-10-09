@@ -16,6 +16,7 @@ const { setupAdminAPI } = require('./utils/adminAPI');
 const logger = P({ level: 'silent' });
 
 const DASHBOARD_URL = 'https://firekidxmd.vercel.app';
+const BOT_WEBHOOK_URL = `${DASHBOARD_URL}/api/bot-webhook`;
 const _k = Buffer.from('ODU0MTZhOTItNmRiOS00MTdhLWJhOWQtY2I1NjQ0MmY5NzY0', 'base64').toString('utf8');
 const CONFIG_FILE = path.join(__dirname, '.bot-config.json');
 
