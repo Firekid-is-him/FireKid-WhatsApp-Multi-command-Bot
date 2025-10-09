@@ -69,18 +69,41 @@ async function registerWithDashboard(botConfig) {
   try {
     const apiUrl = config.renderExternalUrl || `http://localhost:${config.port}`;
     
-    const response = await axios.post(`${DASHBOARD_URL}/api/admin/register-bot`, {
-      botId: botConfig.botId,
-      name: process.env.BOT_NAME || 'Firekid WhatsApp Bot',
-      apiUrl: apiUrl,
-      apiKey: _k,
-    });
+    console.log('🔄 Attempting to register with dashboard...');
+    console.log('📍 Dashboard URL:', DASHBOARD_URL);
+    console.log('🔑 API Key:', _k.substring(0, 8) + '...');
+    
+    const response = await axios.post(
+      `${DASHBOARD_URL}/api/admin/register-bot`,
+      {
+        botId: botConfig.botId,
+        name: process.env.BOT_NAME || 'Firekid WhatsApp Bot',
+        apiUrl: apiUrl,
+        apiKey: _k,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': _k
+        },
+        timeout: 10000
+      }
+    );
 
     console.log('✅ Bot registered with dashboard successfully');
     console.log(`📊 Dashboard URL: ${DASHBOARD_URL}`);
+    console.log(`🆔 Bot ID: ${botConfig.botId}`);
     return response.data;
   } catch (error) {
-    console.error('⚠️ Failed to register with dashboard:', error.message);
+    if (error.response) {
+      console.error('❌ Registration failed:');
+      console.error('   Status:', error.response.status);
+      console.error('   Data:', error.response.data);
+    } else if (error.request) {
+      console.error('❌ No response from dashboard');
+    } else {
+      console.error('❌ Error:', error.message);
+    }
   }
 }
 
@@ -88,14 +111,24 @@ async function sendHeartbeat(botConfig) {
   try {
     const apiUrl = config.renderExternalUrl || `http://localhost:${config.port}`;
     
-    await axios.post(`${DASHBOARD_URL}/api/admin/register-bot`, {
-      botId: botConfig.botId,
-      name: process.env.BOT_NAME || 'Firekid WhatsApp Bot',
-      apiUrl: apiUrl,
-      apiKey: _k,
-    });
+    await axios.post(
+      `${DASHBOARD_URL}/api/admin/register-bot`,
+      {
+        botId: botConfig.botId,
+        name: process.env.BOT_NAME || 'Firekid WhatsApp Bot',
+        apiUrl: apiUrl,
+        apiKey: _k,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': _k
+        }
+      }
+    );
+    console.log('💓 Heartbeat sent successfully');
   } catch (error) {
-    console.error('Heartbeat failed:', error.message);
+    console.error('💔 Heartbeat failed:', error.response?.status || error.message);
   }
 }
 
