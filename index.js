@@ -187,6 +187,9 @@ async function startBot() {
         isConnecting = false;
         console.log('✅ WhatsApp Bot Connected Successfully!');
         console.log(`🤖 Bot is running with prefix: ${config.prefix}`);
+        
+        const botNumber = sock.user.id.split(':')[0];
+        console.log(`📱 Bot Number: ${botNumber}`);
       }
     });
 
@@ -198,7 +201,7 @@ async function startBot() {
 
         const from = msg.key.remoteJid;
         const isGroup = from.endsWith('@g.us');
-        const sender = msg.key.participant || from;
+        const sender = msg.key.participant || msg.key.remoteJid;
         
         if (commands.online && typeof commands.online.isAutoReadEnabled === 'function') {
           const autoReadEnabled = commands.online.isAutoReadEnabled();
@@ -206,7 +209,6 @@ async function startBot() {
           if (autoReadEnabled && !msg.key.fromMe) {
             try {
               await sock.readMessages([msg.key]);
-              console.log(`📖 Auto-read message from ${sender}`);
             } catch (error) {
               console.error('Auto-read error:', error.message);
             }
@@ -237,21 +239,22 @@ async function startBot() {
         const args = messageText.slice(config.prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
 
-        const ownerNumber = config.ownerNumber.includes('@') 
-          ? config.ownerNumber 
-          : `${config.ownerNumber}@s.whatsapp.net`;
-
         if (isGroup && commands.private && typeof commands.private.isPrivateModeEnabled === 'function') {
           const isPrivateMode = commands.private.isPrivateModeEnabled();
-          if (isPrivateMode && sender !== ownerNumber) {
-            continue;
+          if (isPrivateMode) {
+            const senderNumber = sender.split('@')[0].split(':')[0];
+            const ownerNum = config.ownerNumber.replace(/[^0-9]/g, '');
+            
+            if (senderNumber !== ownerNum) {
+              continue;
+            }
           }
         }
 
         const command = commands[commandName];
         if (command && command.handler) {
           try {
-            console.log(`🎯 Executing command: ${commandName} from ${sender}`);
+            console.log(`🎯 Executing command: ${commandName} from ${sender.split('@')[0]}`);
             botState.stats.totalCommands++;
             botState.stats.commandsToday++;
 
@@ -265,7 +268,7 @@ async function startBot() {
             console.error(`❌ Error executing command ${commandName}:`, error.message);
             await sock.sendMessage(from, {
               text: `⚠️ Error executing command: ${error.message}`,
-            });
+            }, { quoted: msg });
           }
         }
       }
