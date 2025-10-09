@@ -188,8 +188,12 @@ async function startBot() {
         console.log('✅ WhatsApp Bot Connected Successfully!');
         console.log(`🤖 Bot is running with prefix: ${config.prefix}`);
         
-        const botNumber = sock.user.id.split(':')[0];
-        console.log(`📱 Bot Number: ${botNumber}`);
+        setTimeout(() => {
+          if (sock.user) {
+            const botNumber = sock.user.id.split(':')[0];
+            console.log(`📱 Bot Number: ${botNumber}`);
+          }
+        }, 1000);
       }
     });
 
