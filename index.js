@@ -249,10 +249,10 @@ async function startBot() {
         const args = messageText.slice(config.prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
 
-        if (isGroup && commands.private && typeof commands.private.isPrivateModeEnabled === 'function') {
+        if (commands.private && typeof commands.private.isPrivateModeEnabled === 'function') {
           const isPrivateMode = commands.private.isPrivateModeEnabled();
           if (isPrivateMode) {
-            const senderNumber = sender.split('@')[0].split(':')[0];
+            const senderNumber = sender.replace(/[^0-9]/g, '');
             const ownerNum = config.ownerNumber.replace(/[^0-9]/g, '');
             
             if (senderNumber !== ownerNum) {
