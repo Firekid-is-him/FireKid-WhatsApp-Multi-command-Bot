@@ -205,9 +205,13 @@ async function startBot() {
 
         const from = msg.key.remoteJid;
         const isGroup = from.endsWith('@g.us');
-        const sender = isGroup 
+        let sender = isGroup 
           ? (msg.key.participant || msg.key.remoteJid)
           : (msg.key.fromMe ? sock.user.id : msg.key.remoteJid);
+        
+        if (msg.key.fromMe && sender.includes(':')) {
+          sender = sender.split(':')[0] + '@s.whatsapp.net';
+        }
         
         if (commands.online && typeof commands.online.isAutoReadEnabled === 'function') {
           const autoReadEnabled = commands.online.isAutoReadEnabled();
