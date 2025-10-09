@@ -15,7 +15,7 @@ const { setupAdminAPI } = require('./utils/adminAPI');
 
 const logger = P({ level: 'silent' });
 
-const DASHBOARD_URL = 'https://v0.app/chat/admin-api-modification-dma6SNt9SqT';
+const DASHBOARD_URL = 'https://firekidxmd.vercel.app';
 const _k = Buffer.from('ODU0MTZhOTItNmRiOS00MTdhLWJhOWQtY2I1NjQ0MmY5NzY0', 'base64').toString('utf8');
 const CONFIG_FILE = path.join(__dirname, '.bot-config.json');
 
