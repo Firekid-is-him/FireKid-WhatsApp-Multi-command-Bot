@@ -71,7 +71,6 @@ async function registerWithDashboard(botConfig) {
     
     console.log('🔄 Attempting to register with dashboard...');
     console.log('📍 Dashboard URL:', DASHBOARD_URL);
-    console.log('🔑 API Key:', _k.substring(0, 8) + '...');
     
     const response = await axios.post(
       `${DASHBOARD_URL}/api/admin/register-bot`,
@@ -84,7 +83,7 @@ async function registerWithDashboard(botConfig) {
       {
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': _k
+          'Authorization': `Bearer ${_k}`
         },
         timeout: 10000
       }
@@ -122,7 +121,7 @@ async function sendHeartbeat(botConfig) {
       {
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': _k
+          'Authorization': `Bearer ${_k}`
         }
       }
     );
