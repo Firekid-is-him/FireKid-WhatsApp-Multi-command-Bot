@@ -216,8 +216,8 @@ async function startBot() {
       if (connection === 'close') {
         isConnecting = false;
         
-        const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
-        const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode;
+        const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
+        const statusCode = lastDisconnect?.error?.output?.statusCode;
 
         console.log('❌ Connection closed. Reason:', statusCode);
 
