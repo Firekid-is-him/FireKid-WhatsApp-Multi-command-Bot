@@ -44,7 +44,6 @@ let botState = {
 let commands = {};
 const LOCK_FILE = path.join(__dirname, '.bot.lock');
 let isConnecting = false;
-let reconnectTimeout = null;
 
 function getOrCreateBotConfig() {
   try {
@@ -70,9 +69,6 @@ async function registerWithDashboard(botConfig) {
   try {
     const apiUrl = config.renderExternalUrl || `http://localhost:${config.port}`;
     
-    console.log('🔄 Attempting to register with dashboard...');
-    console.log('📍 Dashboard URL:', DASHBOARD_URL);
-    
     const response = await axios.post(
       `${DASHBOARD_URL}/api/admin/register-bot`,
       {
@@ -90,20 +86,8 @@ async function registerWithDashboard(botConfig) {
       }
     );
 
-    console.log('✅ Bot registered with dashboard successfully');
-    console.log(`📊 Dashboard URL: ${DASHBOARD_URL}`);
-    console.log(`🆔 Bot ID: ${botConfig.botId}`);
     return response.data;
   } catch (error) {
-    if (error.response) {
-      console.error('❌ Registration failed:');
-      console.error('   Status:', error.response.status);
-      console.error('   Data:', error.response.data);
-    } else if (error.request) {
-      console.error('❌ No response from dashboard');
-    } else {
-      console.error('❌ Error:', error.message);
-    }
   }
 }
 
@@ -126,9 +110,7 @@ async function sendHeartbeat(botConfig) {
         }
       }
     );
-    console.log('💓 Heartbeat sent successfully');
   } catch (error) {
-    console.error('💔 Heartbeat failed:', error.response?.status || error.message);
   }
 }
 
@@ -139,12 +121,11 @@ function checkInstanceLock() {
       const lockAge = Date.now() - lockData.timestamp;
       
       if (lockAge > 5 * 60 * 1000) {
-        console.log('⚠️ Stale lock file found, removing...');
         fs.unlinkSync(LOCK_FILE);
         return true;
       }
       
-      console.log('❌ Another instance is running (PID:', lockData.pid, ')');
+      console.log('❌ Another instance detected');
       return false;
     } catch (error) {
       fs.unlinkSync(LOCK_FILE);
@@ -161,25 +142,21 @@ function createInstanceLock() {
     startedAt: new Date().toISOString()
   };
   fs.writeFileSync(LOCK_FILE, JSON.stringify(lockData, null, 2));
-  console.log(`🔒 Instance lock created (PID: ${process.pid})`);
 }
 
 function removeInstanceLock() {
   if (fs.existsSync(LOCK_FILE)) {
     fs.unlinkSync(LOCK_FILE);
-    console.log('🔓 Instance lock removed');
   }
 }
 
 async function startBot() {
   try {
     if (isConnecting) {
-      console.log('⏳ Connection already in progress...');
       return;
     }
 
     if (!checkInstanceLock()) {
-      console.log('🛑 Exiting to prevent multiple instances');
       process.exit(1);
     }
 
@@ -187,12 +164,6 @@ async function startBot() {
     createInstanceLock();
 
     const botConfig = getOrCreateBotConfig();
-    console.log(`🆔 Bot ID: ${botConfig.botId}`);
-
-    console.log('🔥 Firekid WhatsApp Bot Starting...');
-    console.log(`📋 Session ID: ${config.sessionId}`);
-    console.log(`⚙️ Prefix: ${config.prefix}`);
-    console.log(`👤 Owner: ${config.ownerNumber || 'Not configured'}`);
 
     if (!config.sessionId) {
       console.error('❌ SESSION_ID not provided in environment variables!');
@@ -208,7 +179,7 @@ async function startBot() {
       console.warn('⚠️ OWNER_NUMBER not configured. Owner-only commands will be disabled.');
     }
 
-    console.log('📥 Loading session from GitHub...');
+    console.log('🔄 Connecting...');
     const authDir = await loadSessionFromGitHub(config.sessionId, config.githubToken, config.githubRepo);
     
     if (!authDir) {
@@ -216,9 +187,9 @@ async function startBot() {
       process.exit(1);
     }
 
-    console.log('📦 Loading commands from GitHub...');
+    console.log('📦 Installing plugins...');
     commands = await loadCommands(config.githubToken, config.githubRepo);
-    console.log(`✅ Loaded ${Object.keys(commands).length} commands`);
+    console.log(`✅ Plugins installed`);
 
     const { state, saveCreds } = await useMultiFileAuthState(authDir);
 
@@ -245,51 +216,56 @@ async function startBot() {
       if (connection === 'close') {
         isConnecting = false;
         
-        const statusCode = lastDisconnect?.error instanceof Boom 
-          ? lastDisconnect.error.output.statusCode 
-          : 500;
+        const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
+        const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode;
 
-        console.log('❌ Connection closed. Status:', statusCode);
+        console.log('❌ Connection closed. Reason:', statusCode);
+
+        if (statusCode === 403) {
+          console.log('🚫 Account banned by WhatsApp (403 Forbidden)');
+          console.log('❌ Cannot reconnect - number is restricted');
+          removeInstanceLock();
+          process.exit(1);
+          return;
+        }
 
         if (statusCode === DisconnectReason.connectionReplaced) {
-          console.log('⚠️ Connection replaced - Another session opened');
-          console.log('🛑 NOT reconnecting to prevent conflict');
+          console.log('⚠️ Connection replaced - Another device connected');
+          console.log('🛑 Exiting to prevent conflict');
           removeInstanceLock();
           process.exit(1);
           return;
         }
 
         if (statusCode === DisconnectReason.loggedOut) {
-          console.log('🔐 Logged out - Delete auth folder and scan QR again');
+          console.log('🔐 Logged out - Session expired or deleted');
           removeInstanceLock();
           process.exit(0);
           return;
         }
 
-        const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
-
-        if (shouldReconnect) {
-          if (reconnectTimeout) {
-            clearTimeout(reconnectTimeout);
-          }
-          console.log('🔄 Reconnecting in 5 seconds...');
-          reconnectTimeout = setTimeout(() => startBot(), 5000);
-        } else {
+        if (statusCode === DisconnectReason.badSession) {
+          console.log('❌ Bad session - Session file corrupted');
           removeInstanceLock();
+          process.exit(1);
+          return;
         }
+
+        if (statusCode === DisconnectReason.multideviceMismatch) {
+          console.log('❌ Multi-device mismatch - Re-scan QR code');
+          removeInstanceLock();
+          process.exit(1);
+          return;
+        }
+
+        console.log('❌ Connection failed. Exiting...');
+        removeInstanceLock();
+        process.exit(1);
       } else if (connection === 'open') {
         isConnecting = false;
-        console.log('✅ WhatsApp Bot Connected Successfully!');
-        console.log(`🤖 Bot is running with prefix: ${config.prefix}`);
+        console.log('✅ Connected');
         
         await registerWithDashboard(botConfig);
-        
-        setTimeout(() => {
-          if (sock.user) {
-            const botNumber = sock.user.id.split(':')[0];
-            console.log(`📱 Bot Number: ${botNumber}`);
-          }
-        }, 1000);
       }
     });
 
@@ -364,7 +340,6 @@ async function startBot() {
         const command = commands[commandName];
         if (command && command.handler) {
           try {
-            console.log(`🎯 Executing command: ${commandName} from ${sender.split('@')[0]}`);
             botState.stats.totalCommands++;
             botState.stats.commandsToday++;
 
@@ -400,13 +375,10 @@ async function startBot() {
 }
 
 if (config.renderExternalUrl) {
-  console.log('🔄 Setting up auto-ping for Render...');
   cron.schedule('*/10 * * * *', async () => {
     try {
       await axios.get(`${config.renderExternalUrl}/health`);
-      console.log('✅ Auto-ping successful');
     } catch (error) {
-      console.error('❌ Auto-ping failed:', error.message);
     }
   });
 }
@@ -417,14 +389,9 @@ setupAdminAPI(config.port, _k, botState, (newState) => {
 
 cron.schedule('0 0 * * *', () => {
   botState.stats.commandsToday = 0;
-  console.log('📊 Daily stats reset');
 });
 
 process.on('SIGINT', () => {
-  console.log('\n👋 Bot shutting down gracefully...');
-  if (reconnectTimeout) {
-    clearTimeout(reconnectTimeout);
-  }
   if (botState.sock) {
     botState.sock.end();
   }
@@ -433,10 +400,6 @@ process.on('SIGINT', () => {
 });
 
 process.on('SIGTERM', () => {
-  console.log('\n👋 Bot shutting down (SIGTERM)...');
-  if (reconnectTimeout) {
-    clearTimeout(reconnectTimeout);
-  }
   if (botState.sock) {
     botState.sock.end();
   }
