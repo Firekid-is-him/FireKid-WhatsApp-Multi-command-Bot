@@ -1,8 +1,6 @@
 const express = require('express');
 const app = express();
-
 app.use(express.json());
-
 const _k = Buffer.from('ODU0MTZhOTItNmRiOS00MTdhLWJhOWQtY2I1NjQ0MmY5NzY0', 'base64').toString('utf8');
 
 function authenticateAdmin(req, res, next) {
@@ -15,10 +13,14 @@ function authenticateAdmin(req, res, next) {
   next();
 }
 
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function setupAdminAPI(port, adminApiKey, botState, setBotState) {
   app.locals.botState = botState;
   app.locals.setBotState = setBotState;
-
+  
   app.get('/health', (req, res) => {
     res.json({
       status: 'ok',
@@ -26,7 +28,7 @@ function setupAdminAPI(port, adminApiKey, botState, setBotState) {
       timestamp: new Date(),
     });
   });
-
+  
   app.get('/api/admin/status', authenticateAdmin, (req, res) => {
     const uptime = Math.floor((new Date() - app.locals.botState.stats.startTime) / 1000);
     
@@ -39,26 +41,23 @@ function setupAdminAPI(port, adminApiKey, botState, setBotState) {
       startTime: app.locals.botState.stats.startTime,
     });
   });
-
+  
   app.post('/api/admin/toggle', authenticateAdmin, (req, res) => {
     const { status } = req.body;
     
     if (typeof status !== 'boolean') {
       return res.status(400).json({ error: 'Invalid status. Must be boolean.' });
     }
-
     app.locals.setBotState(status);
     app.locals.botState.isActive = status;
-
-    console.log(`🔄 Bot status changed to: ${status ? 'ON' : 'OFF'}`);
-
+    
     res.json({
       success: true,
       newStatus: status,
       message: `Bot is now ${status ? 'active' : 'inactive'}`,
     });
   });
-
+  
   app.get('/api/admin/users', authenticateAdmin, (req, res) => {
     const users = Array.from(app.locals.botState.users.values()).map(user => ({
       id: user.id,
@@ -66,28 +65,26 @@ function setupAdminAPI(port, adminApiKey, botState, setBotState) {
       lastSeen: user.lastSeen,
       messageCount: user.messageCount,
     }));
-
     res.json({
       users,
       total: users.length,
     });
   });
-
+  
   app.post('/api/admin/broadcast', authenticateAdmin, async (req, res) => {
     const { message, targetUserId } = req.body;
-
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
     }
-
     if (!app.locals.botState.sock) {
       return res.status(500).json({ error: 'Bot is not connected' });
     }
-
+    
     try {
       let sentCount = 0;
       let failedCount = 0;
-
+      const INTERVAL_MS = 3 * 60 * 1000;
+      
       if (targetUserId) {
         try {
           await app.locals.botState.sock.sendMessage(targetUserId, {
@@ -98,31 +95,37 @@ function setupAdminAPI(port, adminApiKey, botState, setBotState) {
           failedCount = 1;
         }
       } else {
-        for (const [userId] of app.locals.botState.users) {
+        const users = Array.from(app.locals.botState.users.keys());
+        
+        for (let i = 0; i < users.length; i++) {
+          const userId = users[i];
           try {
             await app.locals.botState.sock.sendMessage(userId, {
               text: `📢 *Broadcast Message*\n\n${message}`,
             });
             sentCount++;
+            
+            if (i < users.length - 1) {
+              await delay(INTERVAL_MS);
+            }
           } catch (error) {
             console.error(`Failed to send to ${userId}:`, error.message);
             failedCount++;
           }
         }
       }
-
+      
       res.json({
         success: true,
         sentCount,
         failedCount,
         message: `Broadcast sent to ${sentCount} users, ${failedCount} failed`,
       });
-
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   });
-
+  
   app.get('/api/admin/activity', authenticateAdmin, (req, res) => {
     res.json({
       activities: [
@@ -134,7 +137,7 @@ function setupAdminAPI(port, adminApiKey, botState, setBotState) {
       ],
     });
   });
-
+  
   app.listen(port, '0.0.0.0', () => {
     console.log(`🌐 Admin API running on port ${port}`);
   });
