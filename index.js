@@ -7,6 +7,7 @@ const axios = require('axios');
 const cron = require('node-cron');
 const P = require('pino');
 const crypto = require('crypto');
+const http = require('http');
 require('dotenv').config();
 
 const { loadSessionFromGitHub } = require('./utils/sessionLoader');
@@ -340,3 +341,26 @@ process.on('exit', () => {
 });
 
 startBot().catch(console.error);
+
+const server = http.createServer((req, res) => {
+  if (req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'ok', uptime: process.uptime() }));
+  } else {
+    res.writeHead(404);
+    res.end('Not found');
+  }
+});
+
+server.listen(config.port, () => {
+  console.log(`🌐 Health check server running on port ${config.port}`);
+});
+
+if (config.renderExternalUrl) {
+  cron.schedule('*/10 * * * *', async () => {
+    try {
+      await axios.get(`${config.renderExternalUrl}/health`, { timeout: 5000 });
+    } catch (error) {
+    }
+  });
+}
