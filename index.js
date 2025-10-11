@@ -61,14 +61,6 @@ function getOrCreateBotConfig() {
   return botConfig;
 }
 
-async function registerWithDashboard(botConfig) {
-  return true;
-}
-
-async function sendHeartbeat(botConfig) {
-  return true;
-}
-
 function checkInstanceLock() {
   if (fs.existsSync(LOCK_FILE)) {
     try {
@@ -171,7 +163,6 @@ async function startBot() {
       if (connection === 'close') {
         isConnecting = false;
         
-        const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
         const statusCode = lastDisconnect?.error?.output?.statusCode;
 
         console.log('❌ Connection closed. Reason:', statusCode);
@@ -216,14 +207,13 @@ async function startBot() {
         console.log('❌ Connection failed. Exiting...');
         removeInstanceLock();
         process.exit(1);
-if (config.renderExternalUrl) {
-  cron.schedule('*/10 * * * *', async () => {
-    try {
-      await axios.get(`${config.renderExternalUrl}/health`);
-    } catch (error) {
-    }
-  });
-}
+      } else if (connection === 'open') {
+        isConnecting = false;
+        console.log('✅ Connected');
+      }
+    });
+
+    sock.ev.on('messages.upsert', async ({ messages, type }) => {
       if (type !== 'notify') return;
 
       for (const msg of messages) {
@@ -325,13 +315,7 @@ if (config.renderExternalUrl) {
   }
 }
 
-      } else if (connection === 'open') {
-        isConnecting = false;
-        console.log('✅ Connected');
-      }
-    });
-
-    sock.ev.on('messages.upsert', async ({ messages, type }) => {
+cron.schedule('0 0 * * *', () => {
   botState.stats.commandsToday = 0;
 });
 
