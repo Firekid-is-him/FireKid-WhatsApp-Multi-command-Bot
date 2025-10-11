@@ -273,8 +273,13 @@ async function startBot() {
         if (commands.private && typeof commands.private.isPrivateModeEnabled === 'function') {
           const isPrivateMode = commands.private.isPrivateModeEnabled();
           if (isPrivateMode) {
-            const isOwnerCheck = commands.private.isOwner(sender);
-            const isSudoCheck = commands.sudo && typeof commands.sudo.isSudo === 'function' && commands.sudo.isSudo(sender);
+            let normalizedSender = sender;
+            if (sender && sender.includes(':')) {
+              normalizedSender = sender.split(':')[0] + '@s.whatsapp.net';
+            }
+            
+            const isOwnerCheck = commands.private.isOwner && commands.private.isOwner(normalizedSender);
+            const isSudoCheck = commands.sudo && typeof commands.sudo.isSudo === 'function' && commands.sudo.isSudo(normalizedSender);
             
             if (!isOwnerCheck && !isSudoCheck) {
               continue;
