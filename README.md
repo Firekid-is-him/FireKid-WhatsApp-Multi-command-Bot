@@ -238,6 +238,8 @@ PORT=3000
 | `kill` | Wasted meme | `.kill @user` |
 | `lyrics` | Song lyrics | `.lyrics <song>` |
 | `weather` | Weather info | `.weather <city>` |
+| `wcg` | Word game | `.wcg` |
+| `quiz` | Playng A quiz game | `.quiz>` |
 
 ### 👑 Owner Only
 
