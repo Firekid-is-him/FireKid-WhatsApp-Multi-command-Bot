@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  whatsapp-bot:
+    build: .
+    container_name: firekid-bot
+    restart: unless-stopped
+    environment:
+      - SESSION_ID=${SESSION_ID}
+      - OWNER_NUMBER=${OWNER_NUMBER}
+      - PREFIX=${PREFIX:-.}
+      - PORT=3000
+      - RENDER_EXTERNAL_URL=${RENDER_EXTERNAL_URL}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./auth_info_baileys:/app/auth_info_baileys
+    mem_limit: 512m
+    cpus: 0.5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
