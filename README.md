@@ -2,8 +2,7 @@
 
 <img src="https://i.ibb.co/8J3PBsD/photo-2025-10-05-18-18-57.jpg" alt="FIREKID XMD Banner" width="300">
 
-
-# 🔥 F I R E K I D  X M D 🔥
+# 🔥 FIREKID XMD 🔥
 
 <p align="center">
   <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=30&duration=3000&pause=1000&color=FF4500&center=true&vCenter=true&multiline=true&repeat=true&width=650&height=100&lines=%F0%9F%94%A5+The+Ultimate+WhatsApp+Bot;%E2%9A%A1+Fast+%7C+%F0%9F%94%92+Secure+%7C+%F0%9F%92%AA+Powerful" alt="Typing SVG" />
@@ -24,10 +23,10 @@
 
 <p align="center">
   <a href="#-features">✨ Features</a> •
-  <a href="#-get-session">🔑 Get Session</a> •
-  <a href="#-installation">📦 Installation</a> •
+  <a href="#-quick-start">🚀 Quick Start</a> •
+  <a href="#-getting-your-session-id">🔑 Session Setup</a> •
+  <a href="#-deployment-guide">📦 Deploy</a> •
   <a href="#-commands">🎮 Commands</a> •
-  <a href="#-deploy">🚀 Deploy</a> •
   <a href="#-support">💖 Support</a>
 </p>
 
@@ -51,26 +50,26 @@
 
 ### 🎯 Core Features
 - ⚡ **Lightning Performance** - Optimized for speed
-- 🔐 **Military Security** - Protected with Cloudflare
-- 🎨 **Rich Media** - Stickers, images, videos
-- 🌐 **Multi-Device** - Works everywhere
+- 🔐 **Military Grade Security** - Cloudflare protected
+- 🎨 **Rich Media Support** - Stickers, images, videos
+- 🌐 **Multi-Device Ready** - Works everywhere
 - 🔄 **Live Updates** - Commands reload instantly
-- 📱 **Mobile Ready** - Optimized for mobile
+- 📱 **Mobile Optimized** - Perfect on any device
 - 🤖 **AI Powered** - Smart automation
-- 💾 **Data Safe** - Secure storage
+- 💾 **Secure Storage** - Your data is safe
 
 </td>
 <td width="50%" valign="top">
 
 ### 🛡️ Admin Arsenal
-- 👮 **Smart Moderation** - Warn, kick, ban
-- 🔒 **Group Control** - Complete management
-- 🚫 **Anti-Link Pro** - Advanced protection
-- 📝 **Message Filter** - Word blacklist
+- 👮 **Smart Moderation** - Warn, kick, ban system
+- 🔒 **Complete Group Control** - Full management
+- 🚫 **Anti-Link Protection** - Advanced filtering
+- 📝 **Message Filtering** - Word blacklist
 - 🏷️ **Mass Tagging** - Mention everyone
-- 🎭 **Role System** - Custom permissions
-- 📊 **Analytics** - Track everything
-- ⚙️ **Auto-Mod** - Set it and forget it
+- 🎭 **Role Management** - Custom permissions
+- 📊 **Analytics Dashboard** - Track everything
+- ⚙️ **Auto-Moderation** - Set and forget
 
 </td>
 </tr>
@@ -78,7 +77,26 @@
 
 ---
 
-## 🔑 Get Session
+## 🚀 Quick Start
+
+<div align="center">
+
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&duration=2500&pause=1000&color=F77F00&center=true&vCenter=true&width=500&lines=Get+Started+in+5+Minutes;Follow+These+Simple+Steps" alt="Quick Start" />
+
+</div>
+
+### 📋 Prerequisites
+
+Before you begin, make sure you have:
+
+- ✅ Node.js v18 or higher installed
+- ✅ Git installed on your system
+- ✅ Active WhatsApp account
+- ✅ GitHub account (for deployment)
+
+---
+
+## 🔑 Getting Your Session ID
 
 <div align="center">
 
@@ -90,69 +108,85 @@
 
 <br>
 
-### 🎯 PAIR 1 (Recommended)
+### 🎯 Pairing Method (Recommended)
 
 [![Telegram Pairing Bot](https://img.shields.io/badge/Telegram-Pairing_Bot-26A5E4?style=for-the-badge&logo=telegram&logoColor=white&labelColor=000)](https://t.me/firekidxmd_bot)
 
-**Simple Steps:**
+</div>
+
+**Simple 5-Step Process:**
+
 ```
-1️⃣ Click the button above
-2️⃣ Start the bot on Telegram  
-3️⃣ Follow the instructions
-4️⃣ Get your SESSION_ID
-5️⃣ Copy and save it securely
+1️⃣ Click the Telegram button above
+2️⃣ Start the @firekidxmd_bot
+3️⃣ Follow the bot's pairing instructions
+4️⃣ Receive your SESSION_ID via Telegram or WhatsApp
+5️⃣ Copy and save it securely (you'll need it for deployment)
 ```
+
+<div align="center">
+
+> 💡 **Keep your SESSION_ID private!** Never share it publicly.
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
-
-> 💡 **More pairing options coming soon!**
 
 </div>
 
 ---
 
-## 📦 Installation
+## 📦 Deployment Guide
 
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&duration=2500&pause=1000&color=F77F00&center=true&vCenter=true&width=500&lines=Get+Started+in+3+Minutes;Easy+Setup+Process;Follow+Along!" alt="Installation" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=150&section=header&text=Deploy%20on%20Render&fontSize=50&fontColor=fff&animation=twinkling" />
+
+<br>
+
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&duration=2500&pause=800&color=00D9FF&center=true&vCenter=true&width=550&lines=%F0%9F%9A%80+Free+Hosting+on+Render;%F0%9F%8C%8D+24%2F7+Uptime;%E2%9C%85+Deploy+in+Under+10+Minutes" alt="Deploy" />
 
 </div>
 
-### 📋 Prerequisites
+### 🎯 Step-by-Step Render Deployment
 
-```bash
-✅ Node.js v18+ installed
-✅ Git installed
-✅ WhatsApp account ready
-✅ SESSION_ID from pairing bot
-```
+#### **Step 1: Fork the Repository**
 
-### 🚀 Quick Installation
+1. Go to the [GitHub repository](https://github.com/Firekid-is-him/FireKid-WhatsApp-Multi-command-Bot)
+2. Click the **Fork** button in the top right corner
 
-```bash
-# 1️⃣ Clone the repository
-git clone https://github.com/Firekid-is-him/FireKid-WhatsApp-Multi-command-Bot.git
+<div align="center">
+<img src="https://i.ibb.co/m5MX3mVT/image-2025-11-24-232423153.png" alt="Fork Repository" width="800">
+</div>
 
-# 2️⃣ Enter directory
-cd FireKid-WhatsApp-Multi-command-Bot
+3. Wait for GitHub to create your own copy of the repository
 
-# 3️⃣ Install dependencies
-npm install
+#### **Step 2: Copy Your Repository Link**
 
-# 4️⃣ Create environment file
-cp .env.example .env
+1. On your forked repository page, click the green **Code** button
+2. Copy the HTTPS URL
 
-# 5️⃣ Edit .env with your SESSION_ID
-nano .env
+<div align="center">
+<img src="https://i.ibb.co/S7KDbK4d/image-2025-11-24-232557325.png" alt="Copy Repository Link" width="800">
+</div>
 
-# 6️⃣ Start the bot
-npm start
-```
+#### **Step 3: Create Render Account & Deploy**
 
-### ⚙️ Environment Setup
+1. Go to [Render.com](https://render.com/) and create a free account
+2. After logging in, click **"New +"** then select **"Web Service"**
 
-Create `.env` file with these variables:
+<div align="center">
+<img src="https://i.ibb.co/d4TjRPVY/image-2025-11-24-232035255.png" alt="Render Web Service" width="800">
+</div>
+
+3. Connect your GitHub account when prompted
+4. Paste your forked repository URL into the Git Repository field
+
+<div align="center">
+<img src="https://i.ibb.co/CKt2mVbQ/image-2025-11-24-232144229.png" alt="Paste Repository Link" width="800">
+</div>
+
+#### **Step 4: Configure Environment Variables**
+
+Download the `.env` file from the [Releases page](https://github.com/Firekid-is-him/FireKid-WhatsApp-Multi-command-Bot/releases) and fill in:
 
 ```env
 SESSION_ID=your_session_id_from_telegram_bot
@@ -161,8 +195,25 @@ PREFIX=.
 PORT=3000
 ```
 
+**Important Configuration Notes:**
+- Use `npm install` (NOT `yarn install`) as the build command
+- Add all environment variables from your `.env` file to Render
+- The SESSION_ID you got from the Telegram bot is required
+
+#### **Step 5: Deploy!**
+
+1. Click **"Create Web Service"**
+2. Wait for the build to complete (5-10 minutes)
+3. Your bot will automatically start running 24/7!
+
 <div align="center">
+
+### 🎊 Deployment Complete!
+
+Your bot is now live and running on Render!
+
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
+
 </div>
 
 ---
@@ -179,77 +230,77 @@ PORT=3000
 
 </div>
 
-### 📱 General
+### 📱 General Commands
 
 | Command | Description | Usage |
 |:--------|:------------|:------|
-| `menu` | Display all commands | `.menu` |
-| `ping` | Check response time | `.ping` |
-| `alive` | Verify bot status | `.alive` |
-| `online` | Auto-read toggle | `.online on/off` |
+| `menu` | Display all available commands | `.menu` |
+| `ping` | Check bot response time | `.ping` |
+| `alive` | Verify bot is running | `.alive` |
+| `online` | Toggle auto-read messages | `.online on/off` |
 
-### 👮‍♂️ Admin Tools
-
-| Command | Description | Usage |
-|:--------|:------------|:------|
-| `warn` | Issue warning | `.warn @user` |
-| `resetwarning` | Clear warnings | `.resetwarning @user` |
-| `kick` | Remove member | `.kick @user` |
-| `promote` | Grant admin | `.promote @user` |
-| `delete` | Delete messages | Reply with `.delete` |
-| `tagall` | Mention everyone | `.tagall message` |
-| `tag` | Tag without list | `.tag message` |
-| `mute` | Lock chat | `.mute` |
-| `unmute` | Unlock chat | `.unmute` |
-| `setgrppp` | Change group pic | `.setgrppp` + image |
-
-### 🛡️ Group Settings
+### 👮‍♂️ Admin & Moderation
 
 | Command | Description | Usage |
 |:--------|:------------|:------|
-| `antilnk` | Anti-link toggle | `.antilnk on/off` |
-| `allowdomain` | Whitelist domains | `.allowdomain youtube.com` |
-| `left` | Leave notifications | `.left on/off` |
-| `join` | Join notifications | `.join on/off` |
-| `filter` | Word filtering | `.filter add/remove word` |
+| `warn` | Issue warning to user | `.warn @user` |
+| `resetwarning` | Clear user warnings | `.resetwarning @user` |
+| `kick` | Remove member from group | `.kick @user` |
+| `promote` | Grant admin privileges | `.promote @user` |
+| `delete` | Delete specific message | Reply with `.delete` |
+| `tagall` | Mention all group members | `.tagall message` |
+| `tag` | Tag without showing list | `.tag message` |
+| `mute` | Lock group chat | `.mute` |
+| `unmute` | Unlock group chat | `.unmute` |
+| `setgrppp` | Change group profile picture | `.setgrppp` + image |
+
+### 🛡️ Group Protection
+
+| Command | Description | Usage |
+|:--------|:------------|:------|
+| `antilnk` | Toggle anti-link protection | `.antilnk on/off` |
+| `allowdomain` | Whitelist specific domains | `.allowdomain youtube.com` |
+| `left` | Toggle leave notifications | `.left on/off` |
+| `join` | Toggle join notifications | `.join on/off` |
+| `filter` | Manage word filtering | `.filter add/remove word` |
 
 ### 🎨 Media Tools
 
 | Command | Description | Usage |
 |:--------|:------------|:------|
-| `vv` | Reveal view-once | Reply with `.vv` |
-| `sticker` | Create sticker | `.sticker` + media |
-| `toimg` | Sticker to image | Reply with `.toimg` |
+| `vv` | Reveal view-once media | Reply to message with `.vv` |
+| `sticker` | Create sticker from media | `.sticker` + image/video |
+| `toimg` | Convert sticker to image | Reply to sticker with `.toimg` |
 
 ### 📥 Downloader
 
 | Command | Description | Usage |
 |:--------|:------------|:------|
-| `ttdownload` | TikTok videos | `.ttdownload <url>` |
-| `song` | Download music | `.song <name>` |
-| `movie` | Movie info | `.movie <name>` |
+| `ttdownload` | Download TikTok videos | `.ttdownload <url>` |
+| `song` | Download music | `.song <song name>` |
+| `movie` | Get movie information | `.movie <movie name>` |
 
-### 🎮 Fun & Games
+### 🎮 Fun & Entertainment
 
 | Command | Description | Usage |
 |:--------|:------------|:------|
-| `country` | Country quiz | `.country` |
-| `guess` | Riddle game | `.guess` |
-| `kill` | Wasted meme | `.kill @user` |
-| `lyrics` | Song lyrics | `.lyrics <song>` |
-| `weather` | Weather info | `.weather <city>` |
-| `wcg` | Word game | `.wcg` |
-| `quiz` | Playng A quiz game | `.quiz>` |
+| `country` | Play country quiz game | `.country` |
+| `guess` | Play riddle game | `.guess` |
+| `kill` | Generate wasted meme | `.kill @user` |
+| `lyrics` | Get song lyrics | `.lyrics <song name>` |
+| `weather` | Check weather info | `.weather <city>` |
+| `wcg` | Play word chain game | `.wcg` |
+| `quiz` | Play quiz game | `.quiz` |
 
 ### 👑 Owner Only
 
 | Command | Description | Usage |
 |:--------|:------------|:------|
-| `sudo` | Manage sudo | `.sudo add/remove @user` |
-| `block` | Block users | `.block @user` |
+| `sudo` | Manage sudo users | `.sudo add/remove @user` |
+| `block` | Block users from bot | `.block @user` |
 | `unlock` | Unblock users | `.unlock @user` |
-| `private` | Private mode | `.private on/off` |
-| `update` | Reload commands | `.update` |
+| `private` | Toggle private mode | `.private on/off` |
+| `update` | Reload all commands | `.update` |
 
 <div align="center">
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
@@ -257,73 +308,27 @@ PORT=3000
 
 ---
 
-## 🚀 Deploy
+## 🔧 Local Installation (Optional)
 
-<div align="center">
+If you prefer running the bot locally instead of deploying online:
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=150&section=header&text=Deploy%20Anywhere&fontSize=50&fontColor=fff&animation=twinkling" />
+```bash
+# 1️⃣ Clone your forked repository
+git clone https://github.com/YOUR-USERNAME/FireKid-WhatsApp-Multi-command-Bot.git
 
-<br>
+# 2️⃣ Navigate to directory
+cd FireKid-WhatsApp-Multi-command-Bot
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&duration=2500&pause=800&color=00D9FF&center=true&vCenter=true&width=550&lines=%F0%9F%9A%80+Deploy+in+Under+5+Minutes;%F0%9F%8C%8D+Host+on+Any+Platform;%E2%9C%85+24%2F7+Uptime+Guaranteed" alt="Deploy" />
+# 3️⃣ Install dependencies
+npm install
 
-</div>
+# 4️⃣ Create and configure .env file
+cp .env.example .env
+nano .env
 
-<br>
-
-<div align="center">
-
-### Choose Your Platform
-
-[![Deploy to Render](https://img.shields.io/badge/Deploy%20to-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com)
-[![Deploy on Railway](https://img.shields.io/badge/Deploy%20on-Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)](https://railway.app/new)
-[![Deploy to Heroku](https://img.shields.io/badge/Deploy%20to-Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white)](https://heroku.com/deploy)
-
-</div>
-
-### 🎯 Quick Deploy Steps
-
-<table>
-<tr>
-<td width="33%">
-
-#### Render
-1. Fork repository
-2. Create Render account
-3. New Web Service
-4. Connect GitHub
-5. Add env variables
-6. Deploy!
-
-</td>
-<td width="33%">
-
-#### Railway
-1. Click button above
-2. Connect GitHub
-3. Select repository
-4. Add env variables
-5. Auto-deploy starts
-6. Done!
-
-</td>
-<td width="33%">
-
-#### Heroku
-1. Click deploy button
-2. Login to Heroku
-3. Fill config vars
-4. Deploy app
-5. Wait for build
-6. Success!
-
-</td>
-</tr>
-</table>
-
-<div align="center">
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
-</div>
+# 5️⃣ Start the bot
+npm start
+```
 
 ---
 
@@ -335,16 +340,16 @@ PORT=3000
 
 <br><br>
 
-**We love contributions!** Make this project even better.
+**We welcome contributions!** Help make this project even better.
 
 </div>
 
 ```bash
 1. Fork the Project
-2. Create Feature Branch (git checkout -b feature/Amazing)
-3. Commit Changes (git commit -m 'Add Amazing Feature')
-4. Push to Branch (git push origin feature/Amazing)
-5. Open Pull Request
+2. Create Feature Branch (git checkout -b feature/AmazingFeature)
+3. Commit Changes (git commit -m 'Add some AmazingFeature')
+4. Push to Branch (git push origin feature/AmazingFeature)
+5. Open a Pull Request
 ```
 
 ---
@@ -353,11 +358,11 @@ PORT=3000
 
 <div align="center">
 
-This bot is for **educational purposes only**. 
+This bot is intended for **educational and legitimate purposes only**.
 
-Use responsibly and follow WhatsApp's Terms of Service.
+Please use responsibly and comply with WhatsApp's Terms of Service.
 
-The developers are not responsible for misuse.
+The developers are not responsible for any misuse of this software.
 
 </div>
 
@@ -367,7 +372,7 @@ The developers are not responsible for misuse.
 
 <div align="center">
 
-Licensed under the **MIT License** - see [LICENSE](LICENSE) file
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 </div>
 
@@ -381,7 +386,7 @@ Licensed under the **MIT License** - see [LICENSE](LICENSE) file
 
 <br>
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&duration=2500&pause=800&color=FF4500&center=true&vCenter=true&multiline=true&width=500&height=80&lines=%F0%9F%92%AC+Need+Help%3F;%F0%9F%91%A5+Join+Our+Community!;%E2%9A%A1+We're+Here+24%2F7" alt="Support" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&duration=2500&pause=800&color=FF4500&center=true&vCenter=true&multiline=true&width=500&height=80&lines=%F0%9F%92%AC+Need+Help%3F;%F0%9F%91%A5+Join+Our+Community!;%E2%9A%A1+24%2F7+Support+Available" alt="Support" />
 
 <br>
 
@@ -395,9 +400,9 @@ Licensed under the **MIT License** - see [LICENSE](LICENSE) file
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
-### 💼 For Hire
+### 💼 Custom Development Available
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=1000&color=00D9FF&center=true&vCenter=true&width=600&lines=Need+Custom+Bot+Features%3F;Professional+WhatsApp+Automation%3F;Available+for+Freelance+Projects!" alt="For Hire" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=1000&color=00D9FF&center=true&vCenter=true&width=600&lines=Need+Custom+Bot+Features%3F;Professional+WhatsApp+Automation;Available+for+Freelance+Projects!" alt="For Hire" />
 
 <br>
 
