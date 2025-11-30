@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "node index.js",
-    "postinstall": "node node_modules/puppeteer/install.js"
+    "dev": "node index.js"
   },
   "keywords": ["whatsapp", "bot", "baileys", "firekid"],
   "author": "Firekid",
@@ -28,9 +27,6 @@
     "qrcode-terminal": "^0.12.0",
     "sharp": "^0.32.6",
     "simple-git": "^3.28.0"
-  },
-  "puppeteer": {
-    "skipDownload": false
   },
   "engines": {
     "node": ">=18.0.0"
